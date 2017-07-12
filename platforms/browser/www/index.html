@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; connect-src http://myserver.mydomain.com">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <title>iHealth Assistant</title>
+		<link rel="stylesheet" type="text/css" href="css/login.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		
+		
+    </head>
+    <body>
+		 <div class="login-logo">
+			<img src="img/logo_ihealth_assistant.png" alt="Logo"></br>
+		</div>
+		<div class="login-card">
+			<img src="img/login_icon.png" alt="User Login" height="100" width="100" >
+			<div>
+          
+				<input type="text" id="Username" name="user" placeholder="Username">
+				<input type="password" id="Password" name="pass" placeholder="Password">
+				<input type="submit" name="login" class="login login-submit" value="login" onClick="loginUser()"/>
+			</div>
+			
+			<div class="login-help">
+				<a href="#">Register</a> • <a href="#">Forgot Password</a>
+			</div>
+		</div>
+
+
+
+		<script type="text/javascript" src="js/cordova.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript">
+			app.initialize();
+		</script>
+		<script>
+			function loginUser()
+			{
+			//< script src=js/jquery-1.4.3.min.js></ script>
+				//var UserName=form.user.value;
+				//var PassWord=form.pass.value;
+				var UserName =$("#Username").val();
+				var PassWord = $("#Password").val();
+				var WebMethodName= "CheckPatientLogin";
+				$.ajax({
+					ServiceCallID: 1,
+					type: "POST",
+					url: "http://appdataservice.iphysicianhub.in/Service.asmx/CheckPatientLogin",
+					data: "{'UserName':'" + UserName + "','PassWord':'" + PassWord + "'}",
+                   contentType: "application/json; charset=utf-8",
+                   dataType: "json",
+					
+					success: function (result) {
+					   returnVal = result.d;
+					   //alert(returnVal);
+					   
+					   var text=returnVal;
+					   var obj = JSON.parse(text);
+					   
+					   if(obj.MemberId  == "" || obj.MemberId  == null) {
+							alert("Wrong Credintials");
+							$("#Username").val() = "";
+							$("#Password").val() = "";
+					   } else {
+							alert("Welcome "+obj.FirstName + " " + obj.LastName);
+							window.location = "Home.html";
+							localStorage.MemberId =obj.MemberId;
+							localStorage.FirstName =obj.FirstName;
+							localStorage.LastName =obj.LastName;
+							localStorage.LastLoginDate =obj.LastLoginDate;
+							localStorage.MemberName =obj.FirstName + " " + obj.LastName;
+					   }
+					   //document.getElementById("demo").innerHTML =obj.FirstName + " " + obj.LastName;
+					   
+					   //alert(obj.FirstName);
+					   //console.log(obj);
+                   
+                   },
+                   error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   returnVal = '';
+				   alert("Error");
+                   }
+                });
+			}
+		</script>
+    </body>
+</html>
